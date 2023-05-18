@@ -55,13 +55,17 @@ class _ChatScreenState extends State<ChatScreen> {
   //   }
   // }
 
-  void messagesStream() async {
-    await for (var snapshot in _firestore.collection('messages').snapshots()) {
-      for (var message in snapshot.docs) {
-        print(message.data());
-      }
-    }
-  }
+  // void messagesStream() async {
+  //   await for (var snapshot in _firestore.collection('messages').snapshots()) {
+  //     for (var message in snapshot.docs) {
+  //       var messageData = message.data();
+  //       var messageSender = messageData['sender'];
+  //       var messageText = messageData['text'];
+  //       //print(messageData);
+  //       print("$messageSender | ======> $messageText");
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +76,7 @@ class _ChatScreenState extends State<ChatScreen> {
           IconButton(
               icon: Icon(Icons.close),
               onPressed: () {
-                messagesStream();
+                //messagesStream();
               }),
         ],
         title: Text(
@@ -85,9 +89,38 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
+            StreamBuilder(
+              stream: _firestore.collection('messages').snapshots(),
+              builder: (context, parcel) {
+                if (parcel.hasData) {
+                  final messages = parcel.data;
+                  List<Text> messageWidgets = [];
+                  return Column(
+                   children: [
+                      Text("Here"),
+                   ],
+                  );
+                } else if (parcel.hasError) {
+                  return Text('Error: ${parcel.error}');
+                } else {
+                  return Text("Waiting For Data");
+                }
+              },
+            ),
+
+            // StreamBuilder(stream: _firestore.collection('messages').snapshots(), builder: (context,snapshot) {
+            //   if (snapshot.hasData){
+            //     final messages = snapshot.docs;
+            //     List<Text> messageWidgets = [];
+            //     for (var message in messages){
+            //
+            //     }
+            //
+            //   }
+            // })
             Container(
               decoration: kMessageContainerDecoration,
               child: Row(
